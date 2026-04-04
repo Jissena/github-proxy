@@ -1,6 +1,3 @@
-const GITHUB_RAW_BASE = process.env.GITHUB_RAW_BASE || ''
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
-
 const PROTECTED_HTML = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -56,31 +53,9 @@ body{min-height:100vh;background:rgb(13,15,19);display:flex;align-items:center;j
 </body>
 </html>`
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url)
-  const file = searchParams.get('file')
-
-  if (!file) {
-    return new Response(PROTECTED_HTML, {
-      status: 401,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-    })
-  }
-
-  try {
-    const res = await fetch(`${GITHUB_RAW_BASE}/${file}`, {
-      headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-    })
-    if (!res.ok) return new Response(`File tidak ditemukan: ${file}`, { status: 404 })
-    const content = await res.text()
-    return new Response(content, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-store',
-      },
-    })
-  } catch {
-    return new Response('Gagal mengambil file.', { status: 500 })
-  }
+export async function GET() {
+  return new Response(PROTECTED_HTML, {
+    status: 401,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  })
 }
