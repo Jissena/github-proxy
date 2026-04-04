@@ -6,7 +6,7 @@ export default function Home() {
       width:'100vw',
       height:'100vh',
       overflow:'hidden',
-      backgroundImage:"url('https://raw.githubusercontent.com/Jissena/github-proxy/main/Pic.gif')",
+      backgroundImage:"url('https://raw.githubusercontent.com/Jissena/github-proxy/main/pic.gif')",
       backgroundSize:'cover',
       backgroundPosition:'center center',
       backgroundRepeat:'no-repeat',
