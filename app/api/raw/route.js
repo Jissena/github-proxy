@@ -12,7 +12,7 @@ const PROTECTED_HTML = `<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   min-height:100vh;
-  background-image:url('https://i.ibb.co.com/qYmgcYv4/gif-gojo.gif');
+  background-image:url('https://i.ibb.co/qYmgcYv4/gif-gojo.gif');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
