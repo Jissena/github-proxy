@@ -1,17 +1,21 @@
 export default function Home() {
   return (
     <div style={{
-      minHeight:'100vh',
+      margin:0,
+      padding:'1rem',
+      width:'100vw',
+      height:'100vh',
+      overflow:'hidden',
       backgroundImage:"url('https://raw.githubusercontent.com/Jissena/github-proxy/main/Pic.gif')",
       backgroundSize:'cover',
-      backgroundPosition:'center',
+      backgroundPosition:'center center',
       backgroundRepeat:'no-repeat',
       backgroundAttachment:'fixed',
       display:'flex',
       alignItems:'center',
       justifyContent:'center',
       fontFamily:"'DM Mono','Courier New',monospace",
-      padding:'1rem'
+      boxSizing:'border-box'
     }}>
       <div style={{width:'100%',maxWidth:340,background:'rgba(15,18,24,0.85)',borderRadius:10,overflow:'hidden',border:'1px solid rgba(26,111,232,0.2)',backdropFilter:'blur(6px)'}}>
         <div style={{background:'rgba(13,15,19,0.9)',height:34,display:'flex',alignItems:'center',padding:'0 12px',borderBottom:'1px solid rgba(26,111,232,0.1)'}}>
