@@ -36,7 +36,7 @@ export default function Home() {
           </div>
           <div style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'rgba(18,21,28,0.8)',borderRadius:6,border:'1px solid rgba(26,111,232,0.08)',marginBottom:8}}>
             <span style={{fontSize:9,color:'rgb(55,65,88)',textTransform:'uppercase'}}>Protection</span>
-            <span style={{fontSize:9,color:'rgb(105,120,150)'}}>Vercel Proxy</span>
+            <span style={{fontSize:9,color:'rgb(105,120,150)'}}>By JS</span>
           </div>
           <div style={{display:'flex',justifyContent:'space-between',padding:'6px 10px',background:'rgba(18,21,28,0.8)',borderRadius:6,border:'1px solid rgba(26,111,232,0.08)'}}>
             <span style={{fontSize:9,color:'rgb(55,65,88)',textTransform:'uppercase'}}>Content</span>
