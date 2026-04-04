@@ -1,4 +1,4 @@
-const GITHUB_RAW_BASE = process.env.GITHUB_RAW_BASE || 'https://raw.githubusercontent.com/USERNAME/REPO/main'
+const GITHUB_RAW_BASE = process.env.GITHUB_RAW_BASE || ''
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
