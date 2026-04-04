@@ -12,7 +12,7 @@ const PROTECTED_HTML = `<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   min-height:100vh;
-  background-image:url('https://raw.githubusercontent.com/Jissena/github-proxy/main/Pic.gif');
+  background-image:url('https://raw.githubusercontent.com/Jissena/github-proxy/main/pic.gif');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
