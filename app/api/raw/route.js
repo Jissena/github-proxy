@@ -12,10 +12,11 @@ const PROTECTED_HTML = `<!DOCTYPE html>
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   min-height:100vh;
-  background-image:url('https://i.ibb.co/qYmgcYv4/gif-gojo.gif');
+  background-image:url('https://raw.githubusercontent.com/Jissena/github-proxy/main/Pic.gif');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
+  background-attachment:fixed;
   display:flex;align-items:center;justify-content:center;
   font-family:'DM Mono','Courier New',monospace;
   padding:1rem;
