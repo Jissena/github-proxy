@@ -55,7 +55,7 @@ body{
     </div>
     <div class="info-row">
       <span class="info-key">Protection</span>
-      <span class="info-val">Vercel Proxy</span>
+      <span class="info-val">By Js</span>
     </div>
     <div class="info-row">
       <span class="info-key">Content</span>
