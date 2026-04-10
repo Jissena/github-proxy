@@ -85,7 +85,7 @@ export async function GET(request) {
 
   try {
     const res = await fetch(`${GITHUB_RAW_BASE}/${file}`, {
-      headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+      headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }  // ✅ diubah dari token ke Bearer
     })
     if (!res.ok) return new Response(`File tidak ditemukan: ${file}`, { status: 404 })
     const content = await res.text()
