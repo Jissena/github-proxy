@@ -17,8 +17,6 @@ Tidak ada akses langsung ke sumber asli. Semua request melewati proxy.
 
 ## Stack
 
-| Teknologi | Fungsi |
-|---|---|
 | Next.js | Framework |
 | Vercel | Deploy & hosting |
 | GitHub | Source control |
