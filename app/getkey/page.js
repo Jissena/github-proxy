@@ -4,13 +4,14 @@ import { useSearchParams } from 'next/navigation'
 
 function GetKeyContent() {
   const searchParams = useSearchParams()
-  const token = searchParams.get('token') || searchParams.get('r')
+  const token = searchParams.get('token') || searchParams.get('r') || searchParams.get('subid')
   const [status, setStatus] = useState('ready')
   const [key, setKey] = useState('')
   const [expired, setExpired] = useState('')
   const [script, setScript] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
-  const [copied, setCopied] = useState(false)
+  const [copiedKey, setCopiedKey] = useState(false)
+  const [copiedScript, setCopiedScript] = useState(false)
 
   useEffect(() => {
     if (!token) {
@@ -43,115 +44,171 @@ function GetKeyContent() {
     }
   }
 
-  const copyText = (text) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyKey = () => {
+    navigator.clipboard.writeText(key)
+    setCopiedKey(true)
+    setTimeout(() => setCopiedKey(false), 2000)
+  }
+
+  const copyScript = () => {
+    navigator.clipboard.writeText(script)
+    setCopiedScript(true)
+    setTimeout(() => setCopiedScript(false), 2000)
   }
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Share+Tech+Mono&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
           min-height: 100vh;
-          background-image: url('https://raw.githubusercontent.com/Jissena/github-proxy/main/pic.gif');
-          background-size: cover; background-position: center;
-          background-repeat: no-repeat; background-attachment: fixed;
+          background: linear-gradient(135deg, #0a0a0f 0%, #0d0d1a 40%, #080810 100%);
           display: flex; align-items: center; justify-content: center;
-          font-family: 'DM Mono', 'Courier New', monospace; padding: 1rem;
+          font-family: 'Share Tech Mono', monospace; padding: 1rem;
         }
-        .card { width: 100%; max-width: 380px; background: rgba(15,18,24,0.92); border-radius: 12px; overflow: hidden; border: 1px solid rgba(26,111,232,0.25); backdrop-filter: blur(10px); }
-        .topbar { background: rgba(13,15,19,0.95); height: 36px; display: flex; align-items: center; padding: 0 14px; border-bottom: 1px solid rgba(26,111,232,0.15); }
-        .title { flex: 1; font-size: 11px; font-weight: 700; color: rgb(200,210,226); letter-spacing: .12em; }
-        .badge { font-size: 8px; padding: 2px 7px; border-radius: 4px; margin-left: 6px; }
-        .badge.blue { background: rgba(26,111,232,0.18); color: rgb(80,140,220); }
-        .badge.green { background: rgba(46,204,113,0.18); color: rgb(46,204,113); }
-        .badge.red { background: rgba(200,80,80,0.18); color: rgb(200,80,80); }
-        .body { padding: 22px 16px 24px; }
-        .subtitle { text-align: center; font-size: 10px; color: rgb(105,120,150); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 20px; }
-        .spinner { display: flex; justify-content: center; padding: 30px 0; }
-        .spin { width: 32px; height: 32px; border: 3px solid rgba(26,111,232,0.2); border-top-color: rgb(26,111,232); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .bg-grid {
+          position: fixed; inset: 0;
+          background-image: linear-gradient(rgba(26,111,232,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(26,111,232,0.03) 1px, transparent 1px);
+          background-size: 40px 40px; z-index: 0;
+        }
+        .bg-glow {
+          position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+          width: 600px; height: 600px;
+          background: radial-gradient(circle, rgba(26,111,232,0.08) 0%, transparent 70%);
+          z-index: 0; pointer-events: none;
+        }
+        .wrapper { position: relative; z-index: 1; width: 100%; max-width: 420px; }
+        .card {
+          background: rgba(10,10,20,0.95); border: 1px solid rgba(26,111,232,0.3);
+          border-radius: 16px; overflow: hidden;
+          box-shadow: 0 0 40px rgba(26,111,232,0.1), 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .topbar {
+          background: rgba(26,111,232,0.08); border-bottom: 1px solid rgba(26,111,232,0.2);
+          padding: 14px 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .logo-dot {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: rgb(26,111,232); box-shadow: 0 0 8px rgb(26,111,232);
+          animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .topbar-title { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 900; color: rgb(200,215,255); letter-spacing: 0.2em; flex: 1; }
+        .badge { font-size: 9px; padding: 3px 8px; border-radius: 20px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.1em; }
+        .badge-blue { background: rgba(26,111,232,0.2); color: rgb(100,160,255); border: 1px solid rgba(26,111,232,0.3); }
+        .badge-green { background: rgba(46,204,113,0.15); color: rgb(46,204,113); border: 1px solid rgba(46,204,113,0.3); }
+        .badge-red { background: rgba(255,80,80,0.15); color: rgb(255,100,100); border: 1px solid rgba(255,80,80,0.3); }
+        .body { padding: 28px 22px 26px; }
+        .subtitle { text-align: center; font-size: 9px; color: rgba(100,120,180,0.7); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 24px; }
+        .ready-icon { text-align: center; font-size: 48px; margin-bottom: 14px; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .ready-title { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 900; color: rgb(200,215,255); text-align: center; margin-bottom: 6px; letter-spacing: 0.1em; }
+        .ready-sub { text-align: center; font-size: 10px; color: rgba(100,130,200,0.6); margin-bottom: 28px; letter-spacing: 0.05em; }
+        .spinner-wrap { display: flex; justify-content: center; padding: 40px 0; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(26,111,232,0.15); border-top-color: rgb(26,111,232); border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .center-icon { font-size: 36px; text-align: center; margin-bottom: 12px; }
-        .center-title { text-align: center; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-        .center-sub { text-align: center; font-size: 9px; color: rgb(80,100,130); letter-spacing: .06em; margin-bottom: 20px; }
-        .green-text { color: rgb(46,204,113); }
-        .red-text { color: rgb(200,80,80); }
-        .box { background: rgba(18,21,28,0.85); border-radius: 8px; border: 1px solid rgba(26,111,232,0.15); padding: 10px 12px; margin-bottom: 10px; }
-        .box-label { font-size: 9px; color: rgb(55,65,88); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
-        .box-value { font-size: 11px; color: rgb(200,210,226); word-break: break-all; line-height: 1.6; }
-        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .06em; cursor: pointer; margin-bottom: 8px; transition: all 0.2s; }
-        .btn:hover { opacity: 0.85; transform: translateY(-1px); }
-        .btn-green { background: rgb(46,204,113); color: rgb(10,15,20); }
-        .btn-blue { background: rgb(26,111,232); color: white; }
-        .info-row { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(18,21,28,0.8); border-radius: 6px; border: 1px solid rgba(26,111,232,0.08); margin-bottom: 8px; }
-        .info-key { font-size: 9px; color: rgb(55,65,88); text-transform: uppercase; }
-        .info-val { font-size: 9px; color: rgb(105,120,150); }
-        .info-val.green { color: rgb(46,204,113); }
-        .error-msg { text-align: center; font-size: 10px; color: rgb(105,120,150); line-height: 1.6; }
-        .hint { text-align: center; font-size: 9px; color: rgb(55,65,88); margin-top: 10px; line-height: 1.6; }
+        .success-icon { text-align: center; font-size: 44px; margin-bottom: 12px; }
+        .success-title { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 900; color: rgb(46,204,113); text-align: center; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .success-sub { text-align: center; font-size: 9px; color: rgba(46,204,113,0.5); margin-bottom: 20px; letter-spacing: 0.1em; }
+        .key-box { background: rgba(26,111,232,0.06); border: 1px solid rgba(26,111,232,0.25); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+        .key-label { font-size: 8px; color: rgba(26,111,232,0.7); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+        .key-value { font-size: 13px; color: rgb(200,225,255); word-break: break-all; line-height: 1.6; letter-spacing: 0.05em; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .info-cell { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 10px; text-align: center; }
+        .info-cell-label { font-size: 8px; color: rgba(100,120,180,0.6); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .info-cell-val { font-size: 10px; color: rgb(180,200,255); }
+        .info-cell-val.green { color: rgb(46,204,113); }
+        .script-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+        .script-label { font-size: 8px; color: rgba(100,120,180,0.6); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 8px; }
+        .script-value { font-size: 9px; color: rgba(180,200,255,0.7); word-break: break-all; line-height: 1.7; }
+        .btn { width: 100%; padding: 13px; border-radius: 10px; border: none; font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; margin-bottom: 10px; transition: all 0.2s; }
+        .btn:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .btn:active { transform: translateY(0); }
+        .btn-green { background: linear-gradient(135deg, rgb(46,204,113), rgb(39,174,96)); color: rgb(10,15,20); }
+        .btn-blue { background: linear-gradient(135deg, rgb(26,111,232), rgb(20,90,190)); color: white; }
+        .error-icon { font-size: 44px; text-align: center; margin-bottom: 12px; }
+        .error-title { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 900; color: rgb(255,100,100); text-align: center; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .error-msg { text-align: center; font-size: 10px; color: rgba(180,200,255,0.5); line-height: 1.7; }
+        .hint { text-align: center; font-size: 9px; color: rgba(100,120,180,0.5); margin-top: 12px; line-height: 1.7; }
+        .divider { height: 1px; background: rgba(26,111,232,0.1); margin: 16px 0; }
       `}</style>
 
-      <div className="card">
-        <div className="topbar">
-          <span className="title">
-            JS SCRIPT
-            <span className={`badge ${status === 'success' ? 'green' : status === 'error' ? 'red' : 'blue'}`}>
-              {status === 'loading' ? 'LOADING' : status === 'success' ? 'FREE KEY' : status === 'error' ? 'ERROR' : 'READY'}
+      <div className="bg-grid" />
+      <div className="bg-glow" />
+      <div className="wrapper">
+        <div className="card">
+          <div className="topbar">
+            <div className="logo-dot" />
+            <span className="topbar-title">JS SCRIPT</span>
+            <span className={`badge ${status === 'success' ? 'badge-green' : status === 'error' ? 'badge-red' : 'badge-blue'}`}>
+              {status === 'loading' ? 'LOADING...' : status === 'success' ? 'KEY READY' : status === 'error' ? 'ERROR' : 'READY'}
             </span>
-          </span>
-        </div>
-        <div className="body">
-          <p className="subtitle">South Bronx The Trenches</p>
+          </div>
+          <div className="body">
+            <p className="subtitle">South Bronx The Trenches</p>
 
-          {status === 'ready' && (
-            <>
-              <div className="center-icon">🎁</div>
-              <div className="center-title" style={{color:'rgb(200,210,226)'}}>Siap Generate Key!</div>
-              <div className="center-sub">Kamu sudah melewati iklan dengan sukses</div>
-              <button className="btn btn-green" onClick={generateKey}>✨ Generate Key Gratis</button>
-              <div className="hint">Key berlaku 1 hari • 1x per hari<br/>Setelah generate, redeem di Discord</div>
-            </>
-          )}
+            {status === 'ready' && (
+              <>
+                <div className="ready-icon">🎁</div>
+                <div className="ready-title">Siap Generate Key!</div>
+                <div className="ready-sub">Kamu sudah melewati iklan dengan sukses</div>
+                <button className="btn btn-green" onClick={generateKey}>✨ GENERATE KEY GRATIS</button>
+                <div className="hint">Key berlaku 1 hari • 1x per hari<br/>Setelah generate, redeem di Discord</div>
+              </>
+            )}
 
-          {status === 'loading' && (
-            <div className="spinner"><div className="spin" /></div>
-          )}
+            {status === 'loading' && (
+              <div className="spinner-wrap"><div className="spinner" /></div>
+            )}
 
-          {status === 'success' && (
-            <>
-              <div className="center-icon">🎉</div>
-              <div className="center-title green-text">Key Berhasil Dibuat!</div>
-              <div className="center-sub">Key aktif 1 hari • Redeem di Discord</div>
-              <div className="box">
-                <div className="box-label">Key Kamu</div>
-                <div className="box-value">{key}</div>
-              </div>
-              <button className="btn btn-green" onClick={() => copyText(key)}>
-                {copied ? '✅ Tersalin!' : '📋 Copy Key'}
-              </button>
-              <div className="info-row"><span className="info-key">Status</span><span className="info-val green">● Aktif</span></div>
-              <div className="info-row"><span className="info-key">Expired</span><span className="info-val">{expired}</span></div>
-              <div className="info-row"><span className="info-key">Max Device</span><span className="info-val">1</span></div>
-              <div className="box" style={{marginTop:'10px'}}>
-                <div className="box-label">Script Loadstring</div>
-                <div className="box-value" style={{fontSize:'9px'}}>{script}</div>
-              </div>
-              <button className="btn btn-blue" onClick={() => copyText(script)}>📜 Copy Script</button>
-              <div className="hint">Buka Discord → klik Redeem Key → masukkan key</div>
-            </>
-          )}
+            {status === 'success' && (
+              <>
+                <div className="success-icon">🎉</div>
+                <div className="success-title">KEY BERHASIL!</div>
+                <div className="success-sub">AKTIF 1 HARI • REDEEM DI DISCORD</div>
+                <div className="key-box">
+                  <div className="key-label">🔑 Key Kamu</div>
+                  <div className="key-value">{key}</div>
+                </div>
+                <button className="btn btn-green" onClick={copyKey}>
+                  {copiedKey ? '✅ TERSALIN!' : '📋 COPY KEY'}
+                </button>
+                <div className="info-grid">
+                  <div className="info-cell">
+                    <div className="info-cell-label">Status</div>
+                    <div className="info-cell-val green">● Aktif</div>
+                  </div>
+                  <div className="info-cell">
+                    <div className="info-cell-label">Expired</div>
+                    <div className="info-cell-val">{expired}</div>
+                  </div>
+                  <div className="info-cell">
+                    <div className="info-cell-label">Device</div>
+                    <div className="info-cell-val">1</div>
+                  </div>
+                </div>
+                <div className="divider" />
+                <div className="script-box">
+                  <div className="script-label">📜 Script Loadstring</div>
+                  <div className="script-value">{script}</div>
+                </div>
+                <button className="btn btn-blue" onClick={copyScript}>
+                  {copiedScript ? '✅ TERSALIN!' : '📜 COPY SCRIPT'}
+                </button>
+                <div className="hint">Buka Discord → klik Redeem Key → masukkan key kamu</div>
+              </>
+            )}
 
-          {status === 'error' && (
-            <>
-              <div className="center-icon">❌</div>
-              <div className="center-title red-text">Gagal!</div>
-              <div className="error-msg">{errorMsg}</div>
-              <div className="hint" style={{marginTop:'16px'}}>Kembali ke Discord dan klik tombol Get Free Key lagi</div>
-            </>
-          )}
+            {status === 'error' && (
+              <>
+                <div className="error-icon">❌</div>
+                <div className="error-title">GAGAL!</div>
+                <div className="error-msg">{errorMsg}</div>
+                <div className="hint" style={{marginTop:'16px'}}>Kembali ke Discord dan klik tombol Get Free Key lagi</div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>
@@ -160,7 +217,7 @@ function GetKeyContent() {
 
 export default function GetKeyPage() {
   return (
-    <Suspense fallback={<div style={{color:'white',textAlign:'center',marginTop:'50px'}}>Loading...</div>}>
+    <Suspense fallback={<div style={{color:'white',textAlign:'center',marginTop:'50px',fontFamily:'monospace'}}>Loading...</div>}>
       <GetKeyContent />
     </Suspense>
   )
