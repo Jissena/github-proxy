@@ -27,7 +27,7 @@ async function getSheets() {
 
 export async function GET(request) {
   const url = new URL(request.url)
-  const token = url.searchParams.get('token') || url.searchParams.get('r')
+  const token = url.searchParams.get('token') || url.searchParams.get('r') || url.searchParams.get('subid')
   if (!token) {
     return Response.json({ error: 'Token tidak ditemukan' }, { status: 400 })
   }
