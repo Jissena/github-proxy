@@ -1,8 +1,8 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function GetKeyPage() {
+function GetKeyContent() {
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   const [status, setStatus] = useState('loading')
@@ -102,11 +102,7 @@ export default function GetKeyPage() {
         </div>
         <div className="body">
           <p className="subtitle">South Bronx The Trenches</p>
-
-          {status === 'loading' && (
-            <div className="spinner"><div className="spin" /></div>
-          )}
-
+          {status === 'loading' && (<div className="spinner"><div className="spin" /></div>)}
           {status === 'success' && (
             <>
               <div className="success-icon">🎉</div>
@@ -134,7 +130,6 @@ export default function GetKeyPage() {
               </div>
             </>
           )}
-
           {status === 'error' && (
             <>
               <div className="error-icon">❌</div>
@@ -145,5 +140,13 @@ export default function GetKeyPage() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function GetKeyPage() {
+  return (
+    <Suspense fallback={<div style={{color:'white',textAlign:'center',marginTop:'50px'}}>Loading...</div>}>
+      <GetKeyContent />
+    </Suspense>
   )
 }
