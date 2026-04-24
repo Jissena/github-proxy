@@ -26,8 +26,21 @@ async function getSheets() {
 }
 
 export async function GET(request) {
-  const token = new URL(request.url).searchParams.get('token')
-  if (!token) return Response.json({ error: 'Token tidak ada' }, { status: 400 })
+  const url = new URL(request.url)
+  const token = url.searchParams.get('token') || url.searchParams.get('r')
+  if (!token) {
+    return Response.json({ error: 'Token tidak ditemukan' }, { status: 400 })
+  }
+  return Response.json({ valid: true, token })
+}
+
+export async function POST(request) {
+  const body = await request.json()
+  const token = body.token
+
+  if (!token) {
+    return Response.json({ error: 'Token tidak ada' }, { status: 400 })
+  }
 
   try {
     const sheets = await getSheets()
