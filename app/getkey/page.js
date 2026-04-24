@@ -8,10 +8,8 @@ function GetKeyContent() {
   const [status, setStatus] = useState('ready')
   const [key, setKey] = useState('')
   const [expired, setExpired] = useState('')
-  const [script, setScript] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copiedKey, setCopiedKey] = useState(false)
-  const [copiedScript, setCopiedScript] = useState(false)
 
   useEffect(() => {
     if (!token) {
@@ -32,7 +30,6 @@ function GetKeyContent() {
       if (data.success) {
         setKey(data.key)
         setExpired(data.expired)
-        setScript(data.script)
         setStatus('success')
       } else {
         setErrorMsg(data.error || 'Terjadi kesalahan')
@@ -48,12 +45,6 @@ function GetKeyContent() {
     navigator.clipboard.writeText(key)
     setCopiedKey(true)
     setTimeout(() => setCopiedKey(false), 2000)
-  }
-
-  const copyScript = () => {
-    navigator.clipboard.writeText(script)
-    setCopiedScript(true)
-    setTimeout(() => setCopiedScript(false), 2000)
   }
 
   return (
@@ -88,11 +79,7 @@ function GetKeyContent() {
           background: rgba(26,111,232,0.08); border-bottom: 1px solid rgba(26,111,232,0.2);
           padding: 14px 20px; display: flex; align-items: center; gap: 10px;
         }
-        .logo-dot {
-          width: 8px; height: 8px; border-radius: 50%;
-          background: rgb(26,111,232); box-shadow: 0 0 8px rgb(26,111,232);
-          animation: pulse 2s infinite;
-        }
+        .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: rgb(26,111,232); box-shadow: 0 0 8px rgb(26,111,232); animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .topbar-title { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 900; color: rgb(200,215,255); letter-spacing: 0.2em; flex: 1; }
         .badge { font-size: 9px; padding: 3px 8px; border-radius: 20px; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.1em; }
@@ -104,7 +91,7 @@ function GetKeyContent() {
         .ready-icon { text-align: center; font-size: 48px; margin-bottom: 14px; animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .ready-title { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 900; color: rgb(200,215,255); text-align: center; margin-bottom: 6px; letter-spacing: 0.1em; }
-        .ready-sub { text-align: center; font-size: 10px; color: rgba(100,130,200,0.6); margin-bottom: 28px; letter-spacing: 0.05em; }
+        .ready-sub { text-align: center; font-size: 10px; color: rgba(100,130,200,0.6); margin-bottom: 28px; }
         .spinner-wrap { display: flex; justify-content: center; padding: 40px 0; }
         .spinner { width: 40px; height: 40px; border: 3px solid rgba(26,111,232,0.15); border-top-color: rgb(26,111,232); border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -119,19 +106,14 @@ function GetKeyContent() {
         .info-cell-label { font-size: 8px; color: rgba(100,120,180,0.6); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
         .info-cell-val { font-size: 10px; color: rgb(180,200,255); }
         .info-cell-val.green { color: rgb(46,204,113); }
-        .script-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
-        .script-label { font-size: 8px; color: rgba(100,120,180,0.6); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 8px; }
-        .script-value { font-size: 9px; color: rgba(180,200,255,0.7); word-break: break-all; line-height: 1.7; }
         .btn { width: 100%; padding: 13px; border-radius: 10px; border: none; font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; margin-bottom: 10px; transition: all 0.2s; }
-        .btn:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .btn:hover { opacity: 0.85; transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
         .btn-green { background: linear-gradient(135deg, rgb(46,204,113), rgb(39,174,96)); color: rgb(10,15,20); }
-        .btn-blue { background: linear-gradient(135deg, rgb(26,111,232), rgb(20,90,190)); color: white; }
         .error-icon { font-size: 44px; text-align: center; margin-bottom: 12px; }
         .error-title { font-family: 'Orbitron', monospace; font-size: 13px; font-weight: 900; color: rgb(255,100,100); text-align: center; letter-spacing: 0.1em; margin-bottom: 8px; }
         .error-msg { text-align: center; font-size: 10px; color: rgba(180,200,255,0.5); line-height: 1.7; }
         .hint { text-align: center; font-size: 9px; color: rgba(100,120,180,0.5); margin-top: 12px; line-height: 1.7; }
-        .divider { height: 1px; background: rgba(26,111,232,0.1); margin: 16px 0; }
       `}</style>
 
       <div className="bg-grid" />
@@ -154,7 +136,7 @@ function GetKeyContent() {
                 <div className="ready-title">Siap Generate Key!</div>
                 <div className="ready-sub">Kamu sudah melewati iklan dengan sukses</div>
                 <button className="btn btn-green" onClick={generateKey}>✨ GENERATE KEY GRATIS</button>
-                <div className="hint">Key berlaku 1 hari • 1x per hari<br/>Setelah generate, redeem di Discord</div>
+                <div className="hint">Key berlaku 1 hari • 1x per hari<br/>Gunakan key langsung di script Roblox</div>
               </>
             )}
 
@@ -166,7 +148,7 @@ function GetKeyContent() {
               <>
                 <div className="success-icon">🎉</div>
                 <div className="success-title">KEY BERHASIL!</div>
-                <div className="success-sub">AKTIF 1 HARI • REDEEM DI DISCORD</div>
+                <div className="success-sub">AKTIF 1 HARI • GUNAKAN DI SCRIPT</div>
                 <div className="key-box">
                   <div className="key-label">🔑 Key Kamu</div>
                   <div className="key-value">{key}</div>
@@ -188,15 +170,7 @@ function GetKeyContent() {
                     <div className="info-cell-val">1</div>
                   </div>
                 </div>
-                <div className="divider" />
-                <div className="script-box">
-                  <div className="script-label">📜 Script Loadstring</div>
-                  <div className="script-value">{script}</div>
-                </div>
-                <button className="btn btn-blue" onClick={copyScript}>
-                  {copiedScript ? '✅ TERSALIN!' : '📜 COPY SCRIPT'}
-                </button>
-                <div className="hint">Buka Discord → klik Redeem Key → masukkan key kamu</div>
+                <div className="hint">Key sudah aktif • Masukkan key di script Roblox kamu</div>
               </>
             )}
 
