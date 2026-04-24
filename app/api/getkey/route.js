@@ -1,7 +1,6 @@
 import { google } from 'googleapis'
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || ''
-const FREE_SCRIPT = 'loadstring(game:HttpGet("https://github-proxy-lime.vercel.app/api/raw?file=AUTO_MS_AUTO_POTATO_AUTO_BOX"))()'
 
 function generateKey() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -84,7 +83,7 @@ export async function POST(request) {
       requestBody: { values: [['TRUE']] },
     })
 
-    return Response.json({ success: true, key, expired, script: FREE_SCRIPT })
+    return Response.json({ success: true, key, expired })
   } catch (e) {
     return Response.json({ error: `Server error: ${e.message}` }, { status: 500 })
   }
