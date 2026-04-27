@@ -31,30 +31,68 @@ async function getWorkInkSr(destination) {
   }
 }
 
+function getToday() {
+  const now = new Date()
+  now.setHours(now.getHours() + 7)
+  return now.toISOString().split('T')[0]
+}
+
+function getTomorrow() {
+  const now = new Date()
+  now.setHours(now.getHours() + 7)
+  now.setDate(now.getDate() + 1)
+  return now.toISOString().split('T')[0]
+}
+
 export async function GET(request) {
   const url = new URL(request.url)
   const hwid = url.searchParams.get('hwid') || 'unknown'
 
   try {
     const sheets = await getSheets()
+    const today = getToday()
+    const tomorrow = getTomorrow()
 
+    // CEK 1: Apakah HWID sudah punya key aktif di tab Timed?
+    const timedRes = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Timed!A:E',
+    })
+
+    const timedRows = timedRes.data.values || []
+    for (let i = 1; i < timedRows.length; i++) {
+      const row = timedRows[i]
+      if (!row || row.length < 5) continue
+      const note = String(row[4] || '')
+      const expired = String(row[1] || '')
+      if (note.includes(hwid) && expired === tomorrow) {
+        return Response.json({
+          success: false,
+          error: 'You already have an active key today! Come back tomorrow.\nKamu sudah punya key aktif hari ini! Kembali besok.',
+          already_active: true
+        }, { status: 429 })
+      }
+    }
+
+    // CEK 2: Apakah sudah ada token hari ini di tab Tokens?
     const tokenRes = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
       range: 'Tokens!A:D',
     })
 
-    const rows = tokenRes.data.values || []
-    const today = new Date().toISOString().split('T')[0]
-
-    for (let i = 1; i < rows.length; i++) {
-      if (rows[i][1] === hwid && rows[i][2] && rows[i][2].startsWith(today)) {
-        const existingToken = rows[i][0]
+    const tokenRows = tokenRes.data.values || []
+    for (let i = 1; i < tokenRows.length; i++) {
+      const row = tokenRows[i]
+      if (!row) continue
+      if (row[1] === hwid && row[2] && row[2].startsWith(today)) {
+        const existingToken = row[0]
         const sr = await getWorkInkSr(`https://github-proxy-lime.vercel.app/getkey?token=${existingToken}`)
         const link = sr ? `${WORK_INK_LINK}?sr=${sr}` : `${WORK_INK_LINK}?subid=${existingToken}`
         return Response.json({ success: true, link, cached: true })
       }
     }
 
+    // Buat token baru
     const token = generateToken()
     const expiresAt = new Date()
     expiresAt.setMinutes(expiresAt.getMinutes() + 10)
