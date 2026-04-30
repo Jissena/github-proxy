@@ -1,6 +1,10 @@
 const GITHUB_RAW_BASE = process.env.GITHUB_RAW_BASE || ''
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ''
 
+// Cache in-memory: { [filename]: { content, cachedAt } }
+const cache = {}
+const CACHE_TTL_MS = 5 * 60 * 1000 // 5 menit
+
 const PROTECTED_HTML = `<!DOCTYPE html>
 <html lang="id">
 <head>
@@ -83,17 +87,38 @@ export async function GET(request) {
     return new Response('File tidak ditemukan.', { status: 400 })
   }
 
+  // === CACHING: Cek apakah file sudah ada di cache dan belum expired ===
+  const now = Date.now()
+  const cached = cache[file]
+  if (cached && now - cached.cachedAt < CACHE_TTL_MS) {
+    // Kembalikan dari cache, tidak perlu fetch ke GitHub lagi
+    return new Response(cached.content, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'public, max-age=300', // 5 menit
+        'X-Cache': 'HIT', // debug: bisa dilihat di Vercel logs
+      },
+    })
+  }
+
+  // Cache tidak ada atau sudah expired → fetch dari GitHub
   try {
     const res = await fetch(`${GITHUB_RAW_BASE}/${file}`, {
       headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
     })
     if (!res.ok) return new Response(`File tidak ditemukan: ${file}`, { status: 404 })
     const content = await res.text()
+
+    // Simpan ke cache
+    cache[file] = { content, cachedAt: now }
+
     return new Response(content, {
       status: 200,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-store',
+        'Cache-Control': 'public, max-age=300', // 5 menit
+        'X-Cache': 'MISS', // debug: artinya baru fetch dari GitHub
       },
     })
   } catch {
